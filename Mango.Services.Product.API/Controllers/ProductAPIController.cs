@@ -1,11 +1,12 @@
 ﻿using Mango.Services.Product.API.Models.Dto;
 using Mango.Services.Product.API.Repositry;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Services.Product.API.Controllers
 {
     [Route("api/products")]
-    public class ProductAPIController: ControllerBase
+    public class ProductAPIController : ControllerBase
     {
         protected ResponseDto _response;
         private IProductRepositry _productRepositry;
@@ -16,8 +17,9 @@ namespace Mango.Services.Product.API.Controllers
             _response = new ResponseDto();
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<object> Get() 
+        public async Task<object> Get()
         {
             try
             {
@@ -37,6 +39,7 @@ namespace Mango.Services.Product.API.Controllers
             return _response;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("{id}")]
         public async Task<object> Get(int id)
@@ -59,6 +62,7 @@ namespace Mango.Services.Product.API.Controllers
             return _response;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<object> Post([FromBody] ProductDto productDto)
         {
@@ -80,6 +84,7 @@ namespace Mango.Services.Product.API.Controllers
             return _response;
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<object> Update([FromBody] ProductDto productDto)
         {
@@ -101,13 +106,14 @@ namespace Mango.Services.Product.API.Controllers
             return _response;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         [Route("{id}")]
         public async Task<object> Delete(int id)
         {
             try
             {
-                 _response.Result = await _productRepositry.DeleteProduct(id);
+                _response.Result = await _productRepositry.DeleteProduct(id);
             }
             catch (Exception e)
             {

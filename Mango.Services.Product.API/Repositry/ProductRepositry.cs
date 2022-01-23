@@ -38,7 +38,7 @@ namespace Mango.Services.Product.API.Repositry
         {
             try
             {
-                var product = await GetProductById(productId);
+                var product = await db.Products.FirstOrDefaultAsync(x => x.ProductId == productId);
                 if (product == null)
                     return false;
 
