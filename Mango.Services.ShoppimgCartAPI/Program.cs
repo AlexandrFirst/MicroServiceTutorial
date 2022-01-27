@@ -1,7 +1,8 @@
 using AutoMapper;
-using Mango.Services.Product.API;
-using Mango.Services.Product.API.DbContexts;
-using Mango.Services.Product.API.Repositry;
+using Mango.MessageBus;
+using Mango.Services.ShoppimgCartAPI;
+using Mango.Services.ShoppimgCartAPI.DbContexts;
+using Mango.Services.ShoppimgCartAPI.Repositry;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -22,8 +23,8 @@ IMapper mapper = MapingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddScoped<IProductRepositry, ProductRepositry>();
-
+builder.Services.AddScoped<ICartRepositry, CartRepositry>();
+builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>(); 
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
 {
@@ -45,7 +46,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mango.Services.ProductAPI", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mango.Services.ShoppingCartAPI", Version = "v1" });
     c.EnableAnnotations();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

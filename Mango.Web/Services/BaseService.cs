@@ -34,7 +34,8 @@ namespace Mango.Web.Services
 
                 if (apiRequest.Data != null)
                 {
-                    message.Content = new StringContent(JsonConvert.SerializeObject(apiRequest.Data),
+                    var serializedData = JsonConvert.SerializeObject(apiRequest.Data);
+                    message.Content = new StringContent(serializedData,
                         Encoding.UTF8, "application/json");
                 }
 
