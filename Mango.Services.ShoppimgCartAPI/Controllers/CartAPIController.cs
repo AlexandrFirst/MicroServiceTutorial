@@ -12,12 +12,16 @@ namespace Mango.Services.ShoppimgCartAPI.Controllers
     {
         private readonly ICartRepositry _cartRepositry;
         private readonly IMessageBus _messageBus;
+        private readonly ICouponRepositry _couponRepositry;
+
         protected ResponseDto _response;
 
-        public CartAPIController(ICartRepositry cartRepositry, IMessageBus messageBus)
+        public CartAPIController(ICartRepositry cartRepositry, IMessageBus messageBus, ICouponRepositry couponRepositry)
         {
             _cartRepositry = cartRepositry;
             this._messageBus = messageBus;
+            this._couponRepositry = couponRepositry;
+
             this._response = new ResponseDto();
         }
 
@@ -132,6 +136,18 @@ namespace Mango.Services.ShoppimgCartAPI.Controllers
                 if (cartDto == null)
                 {
                     return BadRequest();
+                }
+
+                if (!string.IsNullOrEmpty(checkoutHeader.CouponCode)) 
+                {
+                    CouponDto coupon = await _couponRepositry.GetCoupon(checkoutHeader.CouponCode);
+                    if (checkoutHeader.DiscountTotal != coupon.DiscountAmount) 
+                    {
+                        _response.IsSuccess = false;
+                        _response.ErrorMessages = new List<string>() { "Coupon Price has changed, please confirm" };
+                        _response.DisplayMessage = "Coupon Price has changed, please confirm";
+                        return _response;
+                    }
                 }
 
                 checkoutHeader.CartDetails = cartDto.CartDetails;

@@ -18,12 +18,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHttpClient<ICouponRepositry, CouponRepositry>(u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:CouponAPI"]));
 
 IMapper mapper = MapingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<ICartRepositry, CartRepositry>();
+builder.Services.AddScoped<ICouponRepositry, CouponRepositry>();
 builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>(); 
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
