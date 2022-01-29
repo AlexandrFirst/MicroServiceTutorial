@@ -152,6 +152,8 @@ namespace Mango.Services.ShoppimgCartAPI.Controllers
 
                 checkoutHeader.CartDetails = cartDto.CartDetails;
                 await _messageBus.PublishMessage(checkoutHeader, "checkoutmessagetopic");
+
+                await _cartRepositry.ClearCart(checkoutHeader.UserId);
             }
             catch (Exception ex)
             {

@@ -87,7 +87,7 @@ namespace Mango.Web.Controllers
 
                 if (!response.IsSuccess) 
                 {
-                    ViewBag.Error = response.DisplayMessage;
+                    TempData["Error"] = response.DisplayMessage;
                     return RedirectToAction(nameof(Checkout));
                 }
 
